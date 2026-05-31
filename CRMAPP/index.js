@@ -1,64 +1,85 @@
 /**
- * 1.logic to starting the express server
- * 2.make a connection to mongodb, and create a admin user at the server boottime(if not already present)
- * 3.i will have to connect to the route layer
+ * 1. Logic to start the Express server
+ * 2. Make a connection to MongoDB and create an admin user at server boot time (if not already present)
+ * 3. Connect to the route layer
  */
 
-const express=require("express");
-const app=express();
-require('dotenv').config();
-const mongoose=require("mongoose");
-const User=require("./models/user.model");
-const bcrypt=require("bcryptjs");
+const express = require("express");
+const app = express();
 
+require("dotenv").config();
 
-app.use(express.json());
-
+const mongoose = require("mongoose");
+const User = require("./models/user.model");
+const bcrypt = require("bcryptjs");
 
 /**
- * make a connection with the MongoDB
+ * Middleware to parse JSON request body
+ */
+app.use(express.json());
+
+/**
+ * Make a connection with MongoDB
  */
 (async () => {
+
     try {
-        await mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/crm");
+
+        await mongoose.connect(
+            process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/crm"
+        );
+
         console.log("Mongo Connected");
 
         /**
-         *  i need to have a default ADMIN created here from the begining
+         * I need to have a default ADMIN created here from the beginning
          */
-        const user=await User.findOne({userId:"admin"});
-        if(!user){
+        const user = await User.findOne({
+            userId: "admin"
+        });
+        if (!user) {
             console.log("Admin is not present");
-            // lets create a new ADMIN
-            const admin=await User.create({
-                name:"vipin",
-                userId:"admin",
-                email:"vipinkr0818@gmail.com",
-                userType:"ADMIN",
-                password:bcrypt.hashSync("welcome1",8)
+            // Let's create a new ADMIN
+            const admin = await User.create({
+                name: "Vipin",
+                userId: "admin",
+                email: "vipinkr0818@gmail.com",
+                userType: "ADMIN",
+                userStatus: "APPROVED",
+                password: bcrypt.hashSync("welcome1", 8)
+
             });
-            console.log("Admin created :" ,admin)
-        } else{
-            console.log("Admin user is already present !");
+
+            console.log("Admin created :", admin);
+
+        } else {
+
+            console.log("Admin user is already present!");
+
         }
 
-
-
     } catch (err) {
-        console.log("Error:", err);
+
+        console.log("Error :", err);
+
     }
+
 })();
 
+/**
+ * Let's stitch the auth routes
+ */
+const authRoute = require("./routes/auth.routes");
+
+app.use("/crm/api/v1", authRoute);
 
 /**
- * let's stitch the auth route
+ * Start the Express Server
  */
-const auth_route = require("./routes/auth.routes");
-app.use("/crm/api/v1",auth_route);
+const PORT = process.env.PORT || 7777;
 
+app.listen(PORT, () => {
 
-const PORT=process.env.PORT || 7777;
-console.log(process.env.PORT)
-app.listen(PORT,()=>{
-    console.log(`Server started running on the port num:${PORT}`)
-})
+    console.log(`Server started running on port ${PORT}`);
+
+});

@@ -1,8 +1,14 @@
 const express = require("express");
-const route=express.Router();
-const authController = require("../controllers/auth.controller")
 
+const router = express.Router();
 
-route.post("/auth/signup",authController.signup);
+const authController = require("../controllers/auth.controller");
+const verifyUserReqBody = require("../middlewares/verifyUserreqBody");
 
-module.exports=route;
+router.post(
+    "/auth/signup",
+    verifyUserReqBody.validateUserReqBody,
+    authController.signup
+);
+
+module.exports = router;
