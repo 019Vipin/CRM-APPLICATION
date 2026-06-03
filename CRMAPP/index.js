@@ -70,8 +70,9 @@ app.use(express.json());
  * Let's stitch the auth routes
  */
 const authRoute = require("./routes/auth.routes");
-
 app.use("/crm/api/v1", authRoute);
+
+require("./routes/user.routes")(app);
 
 /**
  * Start the Express Server
