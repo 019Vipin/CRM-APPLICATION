@@ -73,6 +73,7 @@ const authRoute = require("./routes/auth.routes");
 app.use("/crm/api/v1", authRoute);
 
 require("./routes/user.routes")(app);
+require("./routes/ticket.routes")(app);
 
 /**
  * Start the Express Server

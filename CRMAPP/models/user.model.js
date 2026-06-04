@@ -48,6 +48,16 @@ const userSchema = new mongoose.Schema(
             constants.userStatuses.blocked
         ],
         default: constants.userStatuses.approved
+    },
+
+    ticketsCreated: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: "Ticket"
+    },
+
+    ticketsAssigned: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: "Ticket"
     }
 
 },
