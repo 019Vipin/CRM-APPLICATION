@@ -74,6 +74,8 @@ app.use("/crm/api/v1", authRoute);
 
 require("./routes/user.routes")(app);
 require("./routes/ticket.routes")(app);
+require("./routes/engineer.routes")(app);
+require("./routes/admin.routes")(app);
 
 /**
  * Start the Express Server
