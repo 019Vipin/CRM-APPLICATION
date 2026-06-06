@@ -8,6 +8,7 @@ module.exports = {
     userStatuses: {
         pending: "PENDING",
         approved: "APPROVED",
+        rejected: "REJECTED",
         blocked: "BLOCKED"
     }
 };

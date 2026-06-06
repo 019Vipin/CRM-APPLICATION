@@ -2,6 +2,7 @@ const Ticket = require("../models/ticket.model");
 const User = require("../models/user.model");
 const constants = require("../utils/constants");
 const objectConverter = require("../utils/objectConverter");
+const { publishTicketEvent } = require("../config/redis");
 
 exports.createTicket = async (req, res) => {
     const ticketObject = {
@@ -34,6 +35,15 @@ exports.createTicket = async (req, res) => {
                 engineer.ticketsAssigned.push(ticket._id);
                 await engineer.save();
             }
+
+            // Publish event to Redis notification queue
+            await publishTicketEvent({
+                eventType: "TICKET_CREATED",
+                ticketId: ticket._id.toString(),
+                customerEmail: user.email,
+                engineerEmail: engineer ? engineer.email : null,
+                timestamp: new Date().toISOString()
+            });
 
             res.status(201).send(objectConverter.ticketResponse(ticket));
         }
@@ -68,6 +78,18 @@ exports.updateTicket = async (req, res) => {
             ticket.assignee = req.body.assignee != undefined ? req.body.assignee : ticket.assignee;
 
             const updatedTicket = await ticket.save();
+
+            // Publish event to Redis notification queue
+            const reporter = await User.findOne({ userId: ticket.reporter });
+            const assignee = ticket.assignee ? await User.findOne({ userId: ticket.assignee }) : null;
+            await publishTicketEvent({
+                eventType: "TICKET_UPDATED",
+                ticketId: ticket._id.toString(),
+                customerEmail: reporter ? reporter.email : null,
+                engineerEmail: assignee ? assignee.email : null,
+                timestamp: new Date().toISOString()
+            });
+
             res.status(200).send(objectConverter.ticketResponse(updatedTicket));
         } else {
             return res.status(403).send({

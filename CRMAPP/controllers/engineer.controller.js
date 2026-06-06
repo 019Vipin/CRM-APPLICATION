@@ -2,6 +2,7 @@ const Ticket = require("../models/ticket.model");
 const User = require("../models/user.model");
 const constants = require("../utils/constants");
 const objectConverter = require("../utils/objectConverter");
+const { publishTicketEvent } = require("../config/redis");
 
 /**
  * Get all tickets assigned to the logged-in engineer
@@ -86,6 +87,16 @@ exports.assignTicket = async (req, res) => {
 
         engineer.ticketsAssigned.push(ticket._id);
         await engineer.save();
+
+        // Publish TICKET_ASSIGNED event
+        const reporter = await User.findOne({ userId: ticket.reporter });
+        await publishTicketEvent({
+            eventType: "TICKET_ASSIGNED",
+            ticketId: ticket._id.toString(),
+            customerEmail: reporter ? reporter.email : null,
+            engineerEmail: engineer.email,
+            timestamp: new Date().toISOString()
+        });
 
         res.status(200).send(objectConverter.ticketResponse(ticket));
     } catch (err) {

@@ -45,6 +45,7 @@ const userSchema = new mongoose.Schema(
         enum: [
             constants.userStatuses.approved,
             constants.userStatuses.pending,
+            constants.userStatuses.rejected,
             constants.userStatuses.blocked
         ],
         default: constants.userStatuses.approved
