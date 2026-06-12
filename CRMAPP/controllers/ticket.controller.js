@@ -3,6 +3,8 @@ const User = require("../models/user.model");
 const constants = require("../utils/constants");
 const objectConverter = require("../utils/objectConverter");
 const { publishTicketEvent } = require("../config/redis");
+const auditLogger = require("../utils/auditLogger");
+
 
 exports.createTicket = async (req, res) => {
     const ticketObject = {
@@ -43,6 +45,11 @@ exports.createTicket = async (req, res) => {
                 customerEmail: user.email,
                 engineerEmail: engineer ? engineer.email : null,
                 timestamp: new Date().toISOString()
+            });
+
+            await auditLogger.log(req.userId, "TICKET_CREATED", ticket._id.toString(), "TICKET", {
+                title: ticket.title,
+                assignee: ticket.assignee || null
             });
 
             res.status(201).send(objectConverter.ticketResponse(ticket));
@@ -88,6 +95,11 @@ exports.updateTicket = async (req, res) => {
                 customerEmail: reporter ? reporter.email : null,
                 engineerEmail: assignee ? assignee.email : null,
                 timestamp: new Date().toISOString()
+            });
+
+            await auditLogger.log(req.userId, "TICKET_UPDATED", ticket._id.toString(), "TICKET", {
+                newStatus: req.body.status || ticket.status,
+                newAssignee: req.body.assignee || ticket.assignee
             });
 
             res.status(200).send(objectConverter.ticketResponse(updatedTicket));

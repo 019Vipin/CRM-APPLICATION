@@ -1,5 +1,7 @@
 const User = require("../models/user.model");
 const objectConverter = require("../utils/objectConverter");
+const auditLogger = require("../utils/auditLogger");
+
 
 exports.findAll = async (req, res) => {
     const userTypeReq = req.query.userType;
@@ -53,6 +55,19 @@ exports.update = async (req, res) => {
         user.userType = req.body.userType != undefined ? req.body.userType : user.userType;
 
         const updatedUser = await user.save();
+
+        // Log admin action
+        if (req.body.userStatus) {
+            await auditLogger.log(req.userId, "USER_STATUS_UPDATED", updatedUser.userId, "USER", {
+                newStatus: updatedUser.userStatus
+            });
+        }
+        if (req.body.userType) {
+            await auditLogger.log(req.userId, "USER_ROLE_UPDATED", updatedUser.userId, "USER", {
+                newRole: updatedUser.userType
+            });
+        }
+
         res.status(200).send({
             name: updatedUser.name,
             userId: updatedUser.userId,

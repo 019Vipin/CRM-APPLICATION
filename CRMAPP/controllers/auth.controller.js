@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 const constants = require("../utils/constants");
 const jwt = require("jsonwebtoken");
+const auditLogger = require("../utils/auditLogger");
 
 exports.signup = async (req, res) => {
 
@@ -28,6 +29,11 @@ exports.signup = async (req, res) => {
     try {
 
         const userCreated = await User.create(userObj);
+
+        await auditLogger.log(userCreated.userId, "USER_SIGNUP", userCreated.userId, "USER", {
+            userType: userCreated.userType,
+            userStatus: userCreated.userStatus
+        });
 
         const postRes = {
             name: userCreated.name,
@@ -69,6 +75,10 @@ exports.signin = async (req, res) => {
 
         const token = jwt.sign({ id: user.userId }, process.env.SECRET || "mySuperSecretKey", {
             expiresIn: 86400 // 24 hours
+        });
+
+        await auditLogger.log(user.userId, "USER_LOGIN", user.userId, "USER", {
+            userType: user.userType
         });
 
         res.status(200).send({
