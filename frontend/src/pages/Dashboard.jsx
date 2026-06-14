@@ -1,5 +1,8 @@
 import React from 'react';
 import { useAuthStore } from '../store/useAuthStore';
+import { CustomerDashboard } from './dashboards/CustomerDashboard';
+import { EngineerDashboard } from './dashboards/EngineerDashboard';
+import { AdminDashboard } from './dashboards/AdminDashboard';
 
 function Dashboard() {
   const { user } = useAuthStore();
@@ -11,17 +14,9 @@ function Dashboard() {
         <p className="text-secondaryText">Welcome back, {user?.name}</p>
       </div>
       
-      {/* Role-specific dashboard content will go here */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-md border border-border bg-white p-6 shadow-soft">
-          <h3 className="text-sm font-medium text-secondaryText">Role</h3>
-          <div className="mt-2 text-2xl font-bold text-text">{user?.userType}</div>
-        </div>
-        <div className="rounded-md border border-border bg-white p-6 shadow-soft">
-          <h3 className="text-sm font-medium text-secondaryText">Status</h3>
-          <div className="mt-2 text-2xl font-bold text-text">{user?.userStatus}</div>
-        </div>
-      </div>
+      {user?.userType === 'CUSTOMER' && <CustomerDashboard />}
+      {user?.userType === 'ENGINEER' && <EngineerDashboard />}
+      {user?.userType === 'ADMIN' && <AdminDashboard />}
     </div>
   );
 }
