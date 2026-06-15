@@ -43,5 +43,53 @@ export const useTicketStore = create((set, get) => ({
         isLoading: false 
       });
     }
+  },
+
+  createTicket: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.post('/tickets', data);
+      set({ isLoading: false });
+      return true;
+    } catch (err) {
+      set({ error: err.response?.data?.message || 'Failed to create ticket', isLoading: false });
+      return false;
+    }
+  },
+
+  getOneTicket: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.get(`/tickets/${id}`);
+      set({ isLoading: false });
+      return response.data;
+    } catch (err) {
+      set({ error: err.response?.data?.message || 'Failed to fetch ticket details', isLoading: false });
+      return null;
+    }
+  },
+
+  updateTicket: async (id, data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.put(`/tickets/${id}`, data);
+      set({ isLoading: false });
+      return true;
+    } catch (err) {
+      set({ error: err.response?.data?.message || 'Failed to update ticket', isLoading: false });
+      return false;
+    }
+  },
+
+  updateEngineerTicket: async (id, data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.put(`/engineers/tickets/${id}`, data);
+      set({ isLoading: false });
+      return true;
+    } catch (err) {
+      set({ error: err.response?.data?.message || 'Failed to update ticket', isLoading: false });
+      return false;
+    }
   }
 }));

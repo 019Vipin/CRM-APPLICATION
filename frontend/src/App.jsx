@@ -4,6 +4,9 @@ import { AppLayout } from './components/layout/AppLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import TicketList from './pages/tickets/TicketList';
+import TicketCreate from './pages/tickets/TicketCreate';
+import TicketDetail from './pages/tickets/TicketDetail';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuthStore();
@@ -48,7 +51,10 @@ function App() {
             </ProtectedRoute>
           }>
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* We will add more routes here later for tickets, users, etc. */}
+            <Route path="/tickets" element={<TicketList />} />
+            <Route path="/tickets/new" element={<TicketCreate />} />
+            <Route path="/tickets/:id" element={<TicketDetail />} />
+            {/* We will add more routes here later for users */}
           </Route>
           
           {/* Catch all */}
