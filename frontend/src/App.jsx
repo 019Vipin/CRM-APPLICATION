@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import TicketList from './pages/tickets/TicketList';
 import TicketCreate from './pages/tickets/TicketCreate';
 import TicketDetail from './pages/tickets/TicketDetail';
+import UserList from './pages/users/UserList';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuthStore();
@@ -19,6 +20,14 @@ function ProtectedRoute({ children }) {
 function PublicRoute({ children }) {
   const { user } = useAuthStore();
   if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+}
+
+function AdminRoute({ children }) {
+  const { user } = useAuthStore();
+  if (!user || user.userType !== 'ADMIN') {
     return <Navigate to="/dashboard" replace />;
   }
   return children;
@@ -54,7 +63,12 @@ function App() {
             <Route path="/tickets" element={<TicketList />} />
             <Route path="/tickets/new" element={<TicketCreate />} />
             <Route path="/tickets/:id" element={<TicketDetail />} />
-            {/* We will add more routes here later for users */}
+            
+            <Route path="/users" element={
+              <AdminRoute>
+                <UserList />
+              </AdminRoute>
+            } />
           </Route>
           
           {/* Catch all */}
