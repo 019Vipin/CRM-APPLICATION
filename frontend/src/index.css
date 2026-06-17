@@ -1,16 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  body {
-    @apply bg-background text-text antialiased;
-    font-family: 'Inter', sans-serif;
-  }
+@theme {
+  --color-background: #FFFFFF;
+  --color-surface: #F8F9FA;
+  --color-border: #E5E7EB;
+  --color-primary: #2563EB;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-text: #111827;
+  --color-secondaryText: #6B7280;
+  --font-sans: "Inter", sans-serif;
+  --shadow-soft: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
-@layer components {
-  /* We will keep this clean and rely on React components for styles */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
