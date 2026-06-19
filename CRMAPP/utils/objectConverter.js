@@ -6,7 +6,8 @@ exports.userResponse = (users) => {
             userId: user.userId,
             email: user.email,
             userType: user.userType,
-            userStatus: user.userStatus
+            userStatus: user.userStatus,
+            _id: user._id
         });
     });
     return userResult;
@@ -21,6 +22,7 @@ exports.ticketResponse = (ticket) => {
         reporter: ticket.reporter,
         assignee: ticket.assignee,
         id: ticket._id,
+        _id: ticket._id,
         createdAt: ticket.createdAt,
         updatedAt: ticket.updatedAt
     };
